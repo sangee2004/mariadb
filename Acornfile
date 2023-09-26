@@ -1,0 +1,87 @@
+name:        "MariaDB Acorn"
+description: "Acorn providing MariaDB"
+readme:      "./README.md"
+icon:        "./icon.png"
+
+info: localData.info
+
+args: {
+	// Name of the database to create. Defaults to "instance"
+	dbName: "instance"
+	// Name of the user to create. If a username is not set, one is randomly generated
+	username: ""
+}
+
+services: db: {
+	default:   true
+	container: "mariadb"
+	secrets: ["admin", "user"]
+	ports: "3306"
+	data: dbName: args.dbName
+}
+
+containers: mariadb: {
+	// Current LTS
+	image: "mariadb:10.11"
+	ports: ["3306:3306"]
+	env: {
+		MARIADB_ROOT_PASSWORD: "@{secrets.admin.password}"
+		MARIADB_USER:          "@{secrets.user.username}"
+		MARIADB_PASSWORD:      "@{secrets.user.password}"
+		MARIADB_DATABASE:      args.dbName
+	}
+	dirs: "/var/lib/mysql": "volume://db-data?subPath=data"
+	probes: [
+		{
+			type:                "liveness"
+			initialDelaySeconds: 10
+			exec: command: localData.probeExecCommand
+		},
+		{
+			type:                "readiness"
+			initialDelaySeconds: 5
+			exec: command: localData.probeExecCommand
+		},
+	]
+}
+
+secrets: admin: {
+	type: "basic"
+	data: username: "root"
+}
+
+secrets: user: {
+	type: "basic"
+	data: username: args.username
+}
+
+localData: probeExecCommand: [
+	"bash",
+	"-ec",
+	"exec",
+	"mysqladmin",
+	"status",
+	"-uroot",
+	"-p\"${MARIADB_ROOT_PASSWORD}\"",
+]
+
+localData: info: """
+	## Usage
+
+	services: db: {
+		external: "@{acorn.name}"
+	}
+
+	containers: app: {
+		image: "app-image"
+		env: {
+		    DB_HOST:       "@{@{service.}db.address}"
+		    DB_PORT:       "@{@{service.}db.port.3306}"
+		    DB_NAME:       "@{@{service.}db.data.dbName}"
+		    DB_ADMIN_USER: "@{@{service.}db.secrets.admin.username}"
+		    DB_ADMIN_PASS: "@{@{service.}db.secrets.admin.password}"
+			DB_USER:       "@{@{service.}db.secrets.user.username}"
+			DB_PASS:       "@{@{service.}db.secrets.user.password}"
+		}
+	}
+	"""
