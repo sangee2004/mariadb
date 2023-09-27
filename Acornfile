@@ -22,7 +22,9 @@ services: db: {
 
 containers: mariadb: {
 	// Current LTS
-	image: "mariadb:10.11"
+	name:        "MariaDB"
+	description: "Containerized MariaDB database server"
+	image:       "mariadb:10.11"
 	ports: ["3306:3306"]
 	env: {
 		MARIADB_ROOT_PASSWORD: "@{secrets.admin.password}"
@@ -46,12 +48,16 @@ containers: mariadb: {
 }
 
 secrets: admin: {
-	type: "basic"
+	name:        "Admin user credentials"
+	description: "Credentials for the admin user with full control over the database server"
+	type:        "basic"
 	data: username: "root"
 }
 
 secrets: user: {
-	type: "basic"
+	name:        "DB User Credentials"
+	description: "Credentials for the user with full access to the created database instance"
+	type:        "basic"
 	data: username: args.username
 }
 
