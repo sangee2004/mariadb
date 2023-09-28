@@ -1,10 +1,9 @@
-services: db: build: {
-        image: "ghcr.io/acorn-io/mariadb:v#.#.#"
-}
+services: db: image: "ghcr.io/acorn-io/mariadb:v#.#.#"
 
 containers: app: {
 	build: context: "."
 	ports: publish: "8000/http"
+	consumes: ["db"]
 	env: {
 		DB_HOST: "@{service.db.address}"
 		DB_PORT: "@{service.db.port.3306}"

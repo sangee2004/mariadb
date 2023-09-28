@@ -7,8 +7,10 @@ info: localData.info
 
 args: {
 	// Name of the database to create. Defaults to "instance"
+	// Changing this value will have no effect on an existing instance
 	dbName: "instance"
 	// Name of the user to create. If a username is not set, one is randomly generated
+	// Changing this value will have no effect on an existing instance
 	username: ""
 }
 
@@ -21,11 +23,10 @@ services: db: {
 }
 
 containers: mariadb: {
-	// Current LTS
 	name:        "MariaDB"
 	description: "Containerized MariaDB database server"
-	image:       "mariadb:10.11"
-	ports: ["3306:3306"]
+	image:       "mariadb:10.11" // Current LTS Version
+	ports:       "3306/tcp"
 	env: {
 		MARIADB_ROOT_PASSWORD: "@{secrets.admin.password}"
 		MARIADB_USER:          "@{secrets.user.username}"
@@ -80,6 +81,7 @@ localData: info: """
 
 	containers: app: {
 		image: "app-image"
+		consumes: ["db"]
 		env: {
 		    DB_HOST:       "@{@{service.}db.address}"
 		    DB_PORT:       "@{@{service.}db.port.3306}"
