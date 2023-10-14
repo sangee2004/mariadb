@@ -32,6 +32,7 @@ containers: mariadb: {
 		MARIADB_USER:          "@{secrets.user.username}"
 		MARIADB_PASSWORD:      "@{secrets.user.password}"
 		MARIADB_DATABASE:      args.dbName
+                MY_ENV: 	       "test"
 	}
 	dirs: "/var/lib/mysql": "volume://db-data?subPath=data"
 	probes: [
