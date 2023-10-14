@@ -1,4 +1,7 @@
-services: db: image: "ghcr.io/acorn-io/mariadb:v#.#.#"
+services: db: build: {
+	acornfile: "../../Acornfile"
+        context: "../.."
+}
 
 containers: app: {
 	build: context: "."
