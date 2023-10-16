@@ -52,6 +52,12 @@ secrets: admin: {
 	name:        "Admin user credentials"
 	description: "Credentials for the admin user with full control over the database server"
 	type:        "basic"
+        params: {
+            usernameLength: 16
+            usernameCharacters: "abcdedfhifj01234567890"
+            passwordLength: 16
+            passwordCharacters: "abcdedfhifj01234567890"
+        }
 	data: username: "root"
 }
 
@@ -59,6 +65,12 @@ secrets: user: {
 	name:        "DB User Credentials"
 	description: "Credentials for the user with full access to the created database instance"
 	type:        "basic"
+        params: {
+            usernameLength: 16
+            usernameCharacters: "abcdedfhifj01234567890"
+            passwordLength: 16
+            passwordCharacters: "abcdedfhifj01234567890"
+        }
 	data: username: args.username
 }
 
